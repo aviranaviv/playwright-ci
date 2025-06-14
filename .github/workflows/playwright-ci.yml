@@ -19,9 +19,6 @@ jobs:
           ref: main                   # Optional: specify branch, tag or SHA
           path: playwright-with-cicd            # Optional: folder name for the checked-out repo
 
-      - name: Show contents of the checked-out repo
-        run: ls -la playwright-with-cicd
-
       - name: Install node latest version
         uses: actions/setup-node@v4
         with:
@@ -29,12 +26,15 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+        working-directory: playwright-with-cicd
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
+        working-directory: playwright-with-cicd
 
       - name: Run Playwright Tests
         run: npx playwright test || true
+        working-directory: playwright-with-cicd
 
       - name: Generate custom HTML report
         run: npx ts-node .github/generate-report.ts
