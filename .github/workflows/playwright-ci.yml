@@ -20,7 +20,7 @@ jobs:
           path: playwright-with-cicd            # Optional: folder name for the checked-out repo
 
       - name: Install node latest version
-        uses: actions/setup-node@4
+        uses: actions/setup-node@v4
         with:
           node-version: lts/*
 
