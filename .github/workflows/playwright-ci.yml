@@ -7,7 +7,49 @@ jobs:
   first-job:
     runs-on: ubuntu-latest
     steps:
-      - name: First print
-        run: echo "Hellow Wolrd!"
-      - name: End print
-        run: echo "Goodbye"
+       # Checkout the current repository
+      - name: Checkout this repository
+        uses: actions/checkout@v4
+
+        # Checkout another repository (e.g. org/other-repo)
+      - name: Checkout another repository
+      - uses: actions/checkout@v4
+        with:
+          repository: aviranaviv/playwright-with-cicd  # Replace with the owner/repo of the target
+          ref: main                   # Optional: specify branch, tag or SHA
+          path: playwright-with-cicd            # Optional: folder name for the checked-out repo
+
+      - name: Install node latest version
+      - uses: actions/setup-node@4
+        with:
+          node-version: lts/*
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright Tests
+        run: npx playwright test || true
+
+      - name: Generate custom HTML report
+        run: npx ts-node .github/generate-report.ts
+
+      - name: Upload Playwright default report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+      - name: Upload custom HTML report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: custom-html-report
+          path: public/report.html
+          retention-days: 30
+
+      
