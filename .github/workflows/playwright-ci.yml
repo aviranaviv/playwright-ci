@@ -28,8 +28,8 @@ jobs:
         run: npm ci
         working-directory: playwright-with-cicd
 
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
         working-directory: playwright-with-cicd
 
       - name: Run Playwright Tests
