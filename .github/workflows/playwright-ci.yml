@@ -13,14 +13,14 @@ jobs:
 
         # Checkout another repository (e.g. org/other-repo)
       - name: Checkout another repository
-      - uses: actions/checkout@v4
+        uses: actions/checkout@v4
         with:
           repository: aviranaviv/playwright-with-cicd  # Replace with the owner/repo of the target
           ref: main                   # Optional: specify branch, tag or SHA
           path: playwright-with-cicd            # Optional: folder name for the checked-out repo
 
       - name: Install node latest version
-      - uses: actions/setup-node@4
+        uses: actions/setup-node@4
         with:
           node-version: lts/*
 
