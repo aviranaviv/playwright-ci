@@ -1,0 +1,13 @@
+name: Playwright workflow
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  first-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: First print
+        run: echo "Hellow Wolrd!"
+      - name: End print
+        run: echo "Goodbye"
