@@ -42,7 +42,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-html-report
-          path: playwright-with-cicd/playwright-report/
+          path: playwright-basic-project/playwright-report/
           retention-days: 30
 
       - name: Upload Allure Report Results
