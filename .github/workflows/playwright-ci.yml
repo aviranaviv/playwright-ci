@@ -1,6 +1,6 @@
 name: Playwright workflow
 
-on: 
+on:
   workflow_dispatch:
 
 jobs:
@@ -37,30 +37,6 @@ jobs:
           npx playwright test --reporter=html,allure-playwright
         working-directory: playwright-basic-project
 
-      - name: Load test report history
-        uses: actions/checkout@v4
-        if: always()
-        continue-on-error: true
-        with:
-          ref: gh-pages
-          path: gh-pages
-
-      - name: Build test report
-        uses: simple-elf/allure-report-action@v1.7
-        if: always()
-        with:
-          gh_pages: gh-pages
-          allure_history: allure-history
-          allure_results: build/allure-results
-
-      - name: Publish test report
-        uses: peaceiris/actions-gh-pages@v3
-        if: always()
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: allure-history
-
       - name: Upload Playwright HTML Report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
@@ -69,4 +45,12 @@ jobs:
           path: playwright-with-cicd/playwright-report/
           retention-days: 30
 
-      
+      - name: Upload Allure Report Results
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: playwright-basic-project/allure-results/
+          retention-days: 30
+
+
