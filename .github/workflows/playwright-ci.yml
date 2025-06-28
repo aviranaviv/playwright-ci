@@ -37,20 +37,31 @@ jobs:
           npx playwright test --reporter=html,allure-playwright
         working-directory: playwright-basic-project
 
-      - name: Upload Playwright HTML Report
-        if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+      - name: Load Allure test report history
+        uses: actions/checkout@v4
+        if: always()
+        continue-on-error: true
         with:
-          name: playwright-html-report
-          path: playwright-basic-project/playwright-report/
-          retention-days: 30
+          ref: gh-pages
+          path: gh-pages-dir
 
-      - name: Upload Allure Report Results
-        if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+      - name: Generate Allure test report
+        uses: andgineer/allure-report@v3.6
+        id: allure-report
+        if: always()
         with:
-          name: allure-results
-          path: playwright-basic-project/allure-results/
-          retention-days: 30
+          allure-results: allure-results
+          website: gh-pages-dir
+          reports-site-path: builds/tests
+          report-page: behaviors
+
+      - name: Publish Allure test report
+        uses: peaceiris/actions-gh-pages@v3
+        if: ${{ always() && (steps.allure-report.outcome == 'success') }}
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ${{ steps.allure-report.outputs.reports-site }}
+          destination_dir: ${{ steps.allure-report.outputs.reports-site-path }}
 
 
