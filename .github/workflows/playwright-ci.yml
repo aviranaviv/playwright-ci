@@ -12,12 +12,12 @@ jobs:
         uses: actions/checkout@v4
 
         # Checkout another repository (e.g. org/other-repo)
-      - name: Checkout another repository
+      - name: Checkout to playwright-basic-project repository
         uses: actions/checkout@v4
         with:
-          repository: aviranaviv/playwright-with-cicd  # Replace with the owner/repo of the target
-          ref: main                   # Optional: specify branch, tag or SHA
-          path: playwright-with-cicd            # Optional: folder name for the checked-out repo
+          repository: aviranaviv/playwright-basic-project  # Replace with the owner/repo of the target
+          ref: main # Optional: specify branch, tag or SHA
+          path: playwright-basic-project # Optional: folder name for the checked-out repo
 
       - name: Install node latest version
         uses: actions/setup-node@v4
@@ -26,16 +26,16 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-        working-directory: playwright-with-cicd
+        working-directory: playwright-basic-project
 
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
-        working-directory: playwright-with-cicd
+        working-directory: playwright-basic-project
 
       - name: Run Playwright Tests with Allure results
         run: |
           npx playwright test --reporter=html,allure-playwright
-        working-directory: playwright-with-cicd
+        working-directory: playwright-basic-project
 
       - name: Upload Playwright HTML Report
         if: ${{ !cancelled() }}
@@ -50,7 +50,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: allure-results
-          path: playwright-with-cicd/allure-results/
+          path: playwright-basic-project/allure-results/
           retention-days: 30
 
       
