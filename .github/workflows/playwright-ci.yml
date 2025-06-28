@@ -1,25 +1,26 @@
 name: Playwright workflow
 
-on: 
+on:
   workflow_dispatch:
 
 jobs:
   playwright-run:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Required for gh-pages publishing
+
     steps:
-       # Checkout the current repository
       - name: Checkout this repository
         uses: actions/checkout@v4
 
-        # Checkout another repository (e.g. org/other-repo)
-      - name: Checkout to playwright-basic-project repository
+      - name: Checkout Playwright basic project
         uses: actions/checkout@v4
         with:
-          repository: aviranaviv/playwright-basic-project  # Replace with the owner/repo of the target
-          ref: main # Optional: specify branch, tag or SHA
-          path: playwright-basic-project # Optional: folder name for the checked-out repo
+          repository: aviranaviv/playwright-basic-project
+          ref: main
+          path: playwright-basic-project
 
-      - name: Install node latest version
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
@@ -37,7 +38,7 @@ jobs:
           npx playwright test --reporter=html,allure-playwright
         working-directory: playwright-basic-project
 
-      - name: Load test report history
+      - name: Load test report history (gh-pages)
         uses: actions/checkout@v4
         if: always()
         continue-on-error: true
@@ -45,15 +46,15 @@ jobs:
           ref: gh-pages
           path: gh-pages
 
-      - name: Build test report
-        uses: simple-elf/allure-report-action@v1.7
+      - name: Build Allure report
+        uses: simple-elf/allure-report-action@v1.12
         if: always()
         with:
           gh_pages: gh-pages
           allure_history: allure-history
-          allure_results: build/allure-results
+          allure_results: playwright-basic-project/allure-results
 
-      - name: Publish test report
+      - name: Publish Allure report to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         if: always()
         with:
@@ -61,12 +62,16 @@ jobs:
           publish_branch: gh-pages
           publish_dir: allure-history
 
-      - name: Upload Playwright HTML Report
-        if: ${{ !cancelled() }}
+      - name: Upload Playwright HTML report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-html-report
-          path: playwright-basic-project/playwright-report/
+          path: playwright-basic-project/playwright-report
           retention-days: 30
 
-      
+      - name: Print report links
+        if: always()
+        run: |
+          echo "### ✅ [Playwright HTML Report (download as artifact)](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          echo "### 🌐 [Allure Report (hosted via gh-pages)](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/)"
